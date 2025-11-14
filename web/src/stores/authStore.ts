@@ -23,17 +23,14 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
     
       login: (user, token) => set({ user, token, isAuthenticated: true }),
-      
       logout: () => set({ user: null, token: null, isAuthenticated: false }),
-
-      // Helper to get Authorization header for API requests
       getAuthHeader: () => {
         const token = get().token;
         return token ? { Authorization: `Bearer ${token}` } : {};
       },
     }),
     {
-      name: 'auth-storage', // localStorage key
+      name: 'auth-storage', 
     }
   )
 );
