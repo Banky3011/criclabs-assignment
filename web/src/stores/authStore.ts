@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface User {
+type User = {
   id: number;
   email: string;
 }
 
-interface AuthState {
+type AuthState = {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;

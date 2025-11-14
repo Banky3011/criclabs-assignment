@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { z } from 'zod';
 
-// Zod validation schema
 const loginSchema = z.object({
     email: z
         .string()
@@ -19,14 +18,17 @@ const loginSchema = z.object({
 
 const Login = () => {
     
+    const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+
     const navigate = useNavigate();
+
     const { isAuthenticated, login } = useAuthStore();
+
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
-    const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -35,14 +37,9 @@ const Login = () => {
     }, [isAuthenticated, navigate]);
 
     const handleLogin = async () => {
-        // Clear previous errors
         setErrors({});
-
-        // Validate with Zod
         const result = loginSchema.safeParse({ email, password });
-        
         if (!result.success) {
-            // Extract and set errors
             const fieldErrors: { email?: string; password?: string } = {};
             result.error.issues.forEach((err) => {
                 if (err.path[0]) {
@@ -59,11 +56,8 @@ const Login = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
             });
-
             const data = await response.json();
-
             if (response.ok) {
-                // Store user and JWT token in Zustand (also saves to localStorage via persist)
                 login(data.user, data.token);
                 navigate('/home');
             } else {
@@ -82,7 +76,6 @@ const Login = () => {
     return (
         <div className="min-h-screen flex items-center justify-center p-8">
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 w-full max-w-md">
-                {/* Logo */}
                 <div className="flex justify-start mb-4">
                     <div className="w-12 h-12 flex items-center justify-center">
                         <img src={Logo} alt="Logo" width={24} height={24} />

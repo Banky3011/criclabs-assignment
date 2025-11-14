@@ -12,13 +12,8 @@ export interface DataMapping {
   createdAt?: string;
 }
 
-// Helper function to make authenticated API requests
-export const apiRequest = async (
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<Response> => {
+export const apiRequest = async (endpoint: string, options: RequestInit = {}): Promise<Response> => {
   const { getAuthHeader } = useAuthStore.getState();
-  
   const config: RequestInit = {
     ...options,
     headers: {
@@ -27,19 +22,14 @@ export const apiRequest = async (
       ...options.headers,
     },
   };
-
   const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-
-  // If token is invalid/expired, logout user
   if (response.status === 401 || response.status === 403) {
     useAuthStore.getState().logout();
     window.location.href = '/';
   }
-
   return response;
 };
 
-// Example usage functions
 export const getProfile = async () => {
   const response = await apiRequest('/api/profile');
   return response.json();
@@ -53,7 +43,6 @@ export const makeProtectedRequest = async (endpoint: string, method: string = 'G
   return response.json();
 };
 
-// Data Mapping API functions
 export const getAllDataMappings = async (): Promise<{ success: boolean; data: DataMapping[] }> => {
   const response = await apiRequest('/api/data-mappings');
   return response.json();
