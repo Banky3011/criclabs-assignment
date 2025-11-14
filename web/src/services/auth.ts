@@ -1,50 +1,41 @@
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
-export interface LoginRequest {
+type LoginRequest = {
   email: string;
   password: string;
 }
 
-export interface AuthResponse {
-  message: string;
-  user: {
-    id: number;
-    email: string;
-  };
+type User = {
+  id: number;
+  email: string;
 }
 
-export const login = async (credentials: LoginRequest): Promise<AuthResponse> => {
-  const response = await fetch(`${SERVER_URL}/api/auth/login`, {
+type AuthResponse = {
+  message: string;
+  token: string;
+  user: User;
+}
+
+const authFetch = async (endpoint: string, credentials: LoginRequest): Promise<AuthResponse> => {
+  const response = await fetch(`${SERVER_URL}${endpoint}`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(credentials),
   });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || 'Login failed');
+    throw new Error(data.error || 'Request failed');
   }
 
   return data;
 };
 
-export const register = async (credentials: LoginRequest): Promise<AuthResponse> => {
-  const response = await fetch(`${SERVER_URL}/api/auth/register`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(credentials),
-  });
+export const loginApi = async (credentials: LoginRequest): Promise<AuthResponse> => {
+  return authFetch('/api/auth/login', credentials);
+};
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.error || 'Registration failed');
-  }
-
-  return data;
+export const registerApi = async (credentials: LoginRequest): Promise<AuthResponse> => {
+  return authFetch('/api/auth/register', credentials);
 };

@@ -14,7 +14,7 @@ import {
   Plus,
   ArrowUpFromLine,
   ArrowDownToLine,
-  ListFilter,  
+  ListFilter,
   Trash,
   Pencil,
 } from 'lucide-react';
@@ -22,6 +22,7 @@ import Navbar from '../components/Navbar';
 import SidebarMenuItem from '../components/SidebarMenuItem';
 import Button from '../components/Button';
 import Drawer from '../components/Drawer';
+import SearchBar from '../components/SearchBar';
 
 const dataMappingSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -31,21 +32,40 @@ const dataMappingSchema = z.object({
 });
 
 const Home = () => {
+
   const navigate = useNavigate();
+
+  const departments = ["Human Resources", "IT/IS", "Admission", "Marketing"];
+  const dataSubjects = ["Employees", "Faculty Staff", "Students"];
+
   const { user, isAuthenticated, logout } = useAuthStore();
   const [profileData, setProfileData] = useState<any>(null);
   const [activeMenu, setActiveMenu] = useState('data-mapping');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const [dataMappings, setDataMappings] = useState<DataMapping[]>([]);
   const [loading, setLoading] = useState(false);
-  
+
+  const [tempSelectedDepartments, setTempSelectedDepartments] = useState<string[]>([]);
+  const [tempSelectedDataSubjects, setTempSelectedDataSubjects] = useState<string[]>([]);
+
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+  const [selectedDataSubjects, setSelectedDataSubjects] = useState<string[]>([]);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     department: '',
     dataSubjectType: ''
   });
+
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
+  const filteredDataMappings = dataMappings.filter((mapping) => {
+    const departmentMatch = selectedDepartments.length === 0 || selectedDepartments.includes(mapping.department);
+    const dataSubjectMatch = selectedDataSubjects.length === 0 || selectedDataSubjects.includes(mapping.dataSubjectType || '');
+    return departmentMatch && dataSubjectMatch;
+  });
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -94,10 +114,47 @@ const Home = () => {
     }
   }
 
+  const handleDepartmentChange = (department: string) => {
+    setTempSelectedDepartments(prev =>
+      prev.includes(department)
+        ? prev.filter(d => d !== department)
+        : [...prev, department]
+    );
+  };
+
+  const handleDataSubjectChange = (dataSubject: string) => {
+    setTempSelectedDataSubjects(prev =>
+      prev.includes(dataSubject)
+        ? prev.filter(d => d !== dataSubject)
+        : [...prev, dataSubject]
+    );
+  };
+
+  const handleApplyFilter = () => {
+    // Apply the temporary filters
+    setSelectedDepartments(tempSelectedDepartments);
+    setSelectedDataSubjects(tempSelectedDataSubjects);
+    setIsFilterDrawerOpen(false);
+  };
+
+  const handleResetFilter = () => {
+    setTempSelectedDepartments([]);
+    setTempSelectedDataSubjects([]);
+    setSelectedDepartments([]);
+    setSelectedDataSubjects([]);
+    setIsFilterDrawerOpen(false);
+  };
+
+  const handleOpenFilterDrawer = () => {
+    // Initialize temp state with current applied filters
+    setTempSelectedDepartments(selectedDepartments);
+    setTempSelectedDataSubjects(selectedDataSubjects);
+    setIsFilterDrawerOpen(true);
+  };
+
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error for this field when user types
     setFormErrors(prev => {
       const newErrors = { ...prev };
       delete newErrors[name];
@@ -107,10 +164,9 @@ const Home = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Zod Validation
+
     const result = dataMappingSchema.safeParse(formData);
-    
+
     if (!result.success) {
       // Convert Zod errors to a more usable format
       const errors: Record<string, string> = {};
@@ -133,7 +189,6 @@ const Home = () => {
       });
 
       if (response.success) {
-        // Reset form
         setFormData({
           title: '',
           description: '',
@@ -142,7 +197,6 @@ const Home = () => {
         });
         setFormErrors({});
         setIsDrawerOpen(false);
-        // Refresh data
         fetchDataMappings();
       }
     } catch (error) {
@@ -159,9 +213,8 @@ const Home = () => {
   };
 
   const handleSave = () => {
-    // Create a synthetic form event
     const syntheticEvent = {
-      preventDefault: () => {},
+      preventDefault: () => { },
     } as React.FormEvent;
     handleSubmit(syntheticEvent);
   };
@@ -234,6 +287,7 @@ const Home = () => {
             <div className="flex items-center space-x-2">
               <Button
                 icon={ListFilter}
+                onClick={handleOpenFilterDrawer}
                 label="Filter"
               />
               <Button
@@ -269,7 +323,7 @@ const Home = () => {
                 <span>Data Mapping</span>
               </button>
 
-                    
+
               <button
                 className={`pb-3 text-sm font-medium border-b-2 ${activeMenu === 'collection-sources'
                   ? 'border-myGreen text-myGreen'
@@ -288,14 +342,14 @@ const Home = () => {
               <div className="px-6 py-12 text-center text-gray-500">
                 Loading...
               </div>
-            ) : dataMappings.length === 0 ? (
+            ) : filteredDataMappings.length === 0 ? (
               <div className="px-6 py-12 text-center text-gray-500">
-                No data mappings yet. Click "New Data" to add one.
+                {dataMappings.length === 0 ? 'No data mappings yet. Click "New Data" to add one.' : 'No results match your filters.'}
               </div>
             ) : (
               <>
                 <table className="min-w-full text-sm text-left text-gray-700">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-gray-50 border-b text-gray-300">
                     <tr>
                       <th className="px-6 py-3 font-medium">Title</th>
                       <th className="px-6 py-3 font-medium">Description</th>
@@ -304,8 +358,8 @@ const Home = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {dataMappings.map((mapping) => (
-                      <tr key={mapping.id} className="border-b hover:bg-gray-50">
+                    {filteredDataMappings.map((mapping) => (
+                      <tr key={mapping.id} className="border-b-1 hover:bg-gray-50">
                         <td className="px-6 py-3">{mapping.title}</td>
                         <td className="px-6 py-3">{mapping.description || '-'}</td>
                         <td className="px-6 py-3">{mapping.department}</td>
@@ -314,11 +368,11 @@ const Home = () => {
                           <button className="text-black hover:text-green-600 mr-3">
                             <Pencil className="w-4 h-4" />
                           </button>
-                          <button 
+                          <button
                             onClick={() => mapping.id && handleDelete(mapping.id)}
                             className="text-red-500 hover:text-red-700"
                           >
-                            <Trash className="w-4 h-4"/>
+                            <Trash className="w-4 h-4" />
                           </button>
                         </td>
                       </tr>
@@ -327,7 +381,7 @@ const Home = () => {
                 </table>
 
                 <div className="px-6 py-3 text-sm text-gray-500 border-t bg-gray-50">
-                  Showing 1–{dataMappings.length} of {dataMappings.length} results
+                  Showing {filteredDataMappings.length} of {dataMappings.length} results
                 </div>
               </>
             )}
@@ -369,9 +423,8 @@ const Home = () => {
               name="title"
               value={formData.title}
               onChange={handleFormChange}
-              className={`w-full border rounded-md p-2 focus:border-myGreen focus:outline-none ${
-                formErrors.title ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full border rounded-md p-2 focus:border-myGreen focus:outline-none ${formErrors.title ? 'border-red-500' : 'border-gray-300'
+                }`}
               placeholder="Enter title"
             />
             {formErrors.title && (
@@ -401,9 +454,8 @@ const Home = () => {
               name="department"
               value={formData.department}
               onChange={handleFormChange}
-              className={`w-full border rounded-md p-2 focus:border-myGreen focus:outline-none ${
-                formErrors.department ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full border rounded-md p-2 focus:border-myGreen focus:outline-none ${formErrors.department ? 'border-red-500' : 'border-gray-300'
+                }`}
             >
               <option value="">Select Department</option>
               <option value="Human Resources">Human Resources</option>
@@ -430,6 +482,62 @@ const Home = () => {
               <option value="Faculty Staff">Faculty Staff</option>
               <option value="Students">Students</option>
             </select>
+          </div>
+        </form>
+      </Drawer>
+
+      <Drawer
+        isOpen={isFilterDrawerOpen}
+        onClose={handleResetFilter}
+        title="Filter"
+        onSave={handleApplyFilter}
+        loading={false}
+        showIcon={true}
+        saveButtonText="Apply Filter"
+        cancelButtonText="Reset"
+        contentPadding="px-6 py-1"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {formErrors.general && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-md text-sm">
+              {formErrors.general}
+            </div>
+          )}
+
+          <SearchBar />
+
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold">DEPARTMENT</h3>
+            <div className="space-y-3">
+              {departments.map((dept) => (
+                <label key={dept} className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={tempSelectedDepartments.includes(dept)}
+                    onChange={() => handleDepartmentChange(dept)}
+                    className="h-4 w-4 rounded border-gray-400 accent-[#009540] focus:outline-none"
+                  />
+                  <span className="text-black text-sm">{dept}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-4 mt-8">
+            <h3 className="text-sm font-semibold">DATA SUBJECT</h3>
+            <div className="space-y-3">
+              {dataSubjects.map((subject) => (
+                <label key={subject} className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedDataSubjects.includes(subject)}
+                    onChange={() => handleDataSubjectChange(subject)}
+                    className="h-4 w-4 rounded border-gray-400 accent-[#009540] focus:outline-none"
+                  />
+                  <span className="text-black text-sm">{subject}</span>
+                </label>
+              ))}
+            </div>
           </div>
         </form>
       </Drawer>

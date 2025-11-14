@@ -4,6 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { z } from 'zod';
+import useLogin from '../hooks/useLogin';
 
 const loginSchema = z.object({
     email: z
@@ -17,18 +18,15 @@ const loginSchema = z.object({
 });
 
 const Login = () => {
-    
-    const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
     const navigate = useNavigate();
-
     const { isAuthenticated, login } = useAuthStore();
+    const { mutateAsync: loginMutation } = useLogin();
 
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -51,24 +49,13 @@ const Login = () => {
         }
 
         try {
-            const response = await fetch(`${SERVER_URL}/api/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            });
-            const data = await response.json();
-            if (response.ok) {
-                login(data.user, data.token);
-                navigate('/home');
-            } else {
-                setErrors({ 
-                    password: data.error || 'Invalid email or password' 
-                });
-            }
+            const response = await loginMutation({ email, password });
+            login(response.user, response.token);
+            navigate('/home');
         } catch (err) {
-            console.error('Login error:', err);
-            setErrors({ 
-                password: 'Something went wrong. Please try again.' 
+            const errorMessage = err instanceof Error ? err.message : 'Invalid email or password';
+            setErrors({
+                password: errorMessage
             });
         }
     };
@@ -94,11 +81,10 @@ const Login = () => {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className={`block w-full border rounded-md p-2 focus:outline-none border-2 ${
-                            errors.email 
-                                ? 'border-red-500 focus:border-red-500' 
-                                : 'border-gray-300 focus:border-[#009540]'
-                        }`}
+                        className={`block w-full border rounded-md p-2 focus:outline-none border-2 ${errors.email
+                            ? 'border-red-500 focus:border-red-500'
+                            : 'border-gray-300 focus:border-[#009540]'
+                            }`}
                     />
                     {errors.email && (
                         <p className="text-red-500 text-sm mt-1">{errors.email}</p>
@@ -114,11 +100,10 @@ const Login = () => {
                             type={showPassword ? 'text' : 'password'}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className={`block w-full border rounded-md p-2 focus:outline-none border-2 ${
-                                errors.password 
-                                    ? 'border-red-500 focus:border-red-500' 
-                                    : 'border-gray-300 focus:border-[#009540]'
-                            }`}
+                            className={`block w-full border rounded-md p-2 focus:outline-none border-2 ${errors.password
+                                ? 'border-red-500 focus:border-red-500'
+                                : 'border-gray-300 focus:border-[#009540]'
+                                }`}
                         />
                         <button
                             type="button"
