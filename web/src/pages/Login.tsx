@@ -120,7 +120,7 @@ const Login = () => {
 
                 <button
                     onClick={handleLogin}
-                    className="bg-[#009540] w-full rounded-md text-white p-3 border border-black mt-8"
+                    className="bg-[#009540] w-full rounded-md text-white p-3 border border-[#377D3F] mt-8"
                 >
                     Login
                 </button>

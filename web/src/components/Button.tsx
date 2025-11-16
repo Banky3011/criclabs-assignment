@@ -4,7 +4,7 @@ type ButtonProps = {
   icon: LucideIcon;
   label: string;
   onClick?: () => void;
-  variant?: 'default' | 'primary';
+  variant?: 'default' | 'primary' | 'onlyBorder';
   className?: string;
 }
 
@@ -15,7 +15,9 @@ type ButtonProps = {
   
   const variantClasses = {
     default: 'bg-white border border-gray-300 hover:bg-gray-300 text-gray-700',
-    primary: 'bg-[#009540] hover:bg-[#007a33] border border-black text-white',
+    primary: 'bg-[#009540] hover:bg-[#007a33] border border-[#377D3F] text-white',
+    onlyBorder: 'bg-white border border-[#009540] text-[#009540]',
+
   };
 
   return (

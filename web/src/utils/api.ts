@@ -1,8 +1,7 @@
 import { useAuthStore } from '../stores/authStore';
 
-const API_BASE_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_SERVER_URL;
 
-// Data Mapping interface
 export interface DataMapping {
   id?: number;
   title: string;

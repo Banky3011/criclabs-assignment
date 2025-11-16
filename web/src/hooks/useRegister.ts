@@ -1,5 +1,20 @@
 import { useMutation } from '@tanstack/react-query';
-import type { AuthCredentials, AuthResponse } from '../types/auth';
+
+type User = {
+  id: number;
+  email: string;
+}
+
+type AuthCredentials = {
+  email: string;
+  password: string;
+}
+
+type AuthResponse = {
+  message: string;
+  token: string;
+  user: User;
+}
 
 const useRegister = () => {
   return useMutation<AuthResponse, Error, AuthCredentials>({

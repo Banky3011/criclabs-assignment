@@ -18,7 +18,7 @@ const SidebarMenuItem = (props: SidebarMenuItemProps) => {
   return (
     <button
       onClick={onClick}
-      className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors text-left whitespace-nowrap md:w-full ${isActive ? `text-[${activeColor}]` : inactiveTextColor
+      className={`flex items-center space-x-2 py-2 mr-8 rounded-lg transition-colors text-left whitespace-nowrap md:w-full ${isActive ? `text-[${activeColor}]` : inactiveTextColor
         }`}
       style={isActive ? { color: activeColor } : undefined}
     >
