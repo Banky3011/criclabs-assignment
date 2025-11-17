@@ -11,13 +11,6 @@ npm run dev
 ```
 Default server runs on `http://localhost:3001`.
 
-### Environment Variables (optional)
-Create `server/.env`:
-```
-PORT=3001
-JWT_SECRET=your-super-secret-jwt-key
-```
-
 ## 2. Start the Web Client
 Open a new terminal:
 ```bash
