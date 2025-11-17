@@ -6,16 +6,14 @@ import Footer from './components/Footer';
 function App() {
     return (
         <BrowserRouter>
-            <div className="relative min-h-screen">
-                <div className="">
+            <div className="min-h-screen flex flex-col">
+                <div className="flex-1">
                     <Routes>
                         <Route path="/" element={<Login />} />
                         <Route path="/home" element={<Home />} />
                     </Routes>
                 </div>
-                <div className="fixed bottom-0 left-0 right-0">
-                    <Footer />
-                </div>
+                <Footer />
             </div>
         </BrowserRouter>
     )
