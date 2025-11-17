@@ -48,7 +48,7 @@ const NewDataDrawer = (props: NewDataDrawerProps) => {
             name="title"
             value={formData.title}
             onChange={onFormChange}
-            className={`w-full border rounded-md p-2 focus:border-myGreen focus:outline-none ${
+            className={`w-full text-sm border rounded-md p-2 focus:border-myGreen focus:outline-none ${
               formErrors.title ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder=""
@@ -66,7 +66,7 @@ const NewDataDrawer = (props: NewDataDrawerProps) => {
             name="description"
             value={formData.description}
             onChange={onFormChange}
-            className="w-full border border-gray-300 rounded-md p-2 focus:border-myGreen focus:outline-none"
+            className="w-full text-sm border border-gray-300 rounded-md p-2 focus:border-myGreen focus:outline-none"
             rows={4}
             placeholder=""
           />

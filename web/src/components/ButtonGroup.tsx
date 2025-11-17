@@ -14,7 +14,6 @@ const ButtonGroup = (props: ButtonGroupProps) => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between">
         <h2 className="text-2xl font-semibold mb-3 md:mb-4">Data Mapping</h2>
         <div className="flex items-center space-x-3 md:space-x-2">
-          {/* Mobile: Icon only, Desktop: Icon + Label */}
           <button
             onClick={onFilterClick}
             className="p-3 md:p-2 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center justify-center md:px-4"

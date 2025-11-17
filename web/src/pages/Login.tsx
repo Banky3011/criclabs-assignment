@@ -14,7 +14,6 @@ const loginSchema = z.object({
     password: z
         .string()
         .min(6, 'Password must be at least 6 characters')
-        .max(100, 'Password is too long'),
 });
 
 const Login = () => {
@@ -81,14 +80,16 @@ const Login = () => {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className={`block w-full border rounded-md p-2 focus:outline-none border-2 ${errors.email
+                        className={`block w-full h-10 border rounded-md p-2 focus:outline-none ${errors.email
                             ? 'border-red-500 focus:border-red-500'
                             : 'border-gray-300 focus:border-[#009540]'
                             }`}
                     />
-                    {errors.email && (
-                        <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-                    )}
+                        {errors.email && (
+                            <div className="h-10 mt-5 flex items-center bg-[#F5222D14] border border-[#F5222D29] text-red-700 px-4 rounded-md mt-2">
+                                <p className="text-sm">{errors.email}</p>
+                            </div>
+                        )}
                 </div>
 
                 <div className="mb-4">
@@ -100,7 +101,7 @@ const Login = () => {
                             type={showPassword ? 'text' : 'password'}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className={`block w-full border rounded-md p-2 focus:outline-none border-2 ${errors.password
+                            className={`block w-full h-10 border rounded-md p-2 focus:outline-none ${errors.password
                                 ? 'border-red-500 focus:border-red-500'
                                 : 'border-gray-300 focus:border-[#009540]'
                                 }`}
@@ -114,13 +115,15 @@ const Login = () => {
                         </button>
                     </div>
                     {errors.password && (
-                        <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                        <div className="h-10 mt-5 flex items-center bg-[#F5222D14] border border-[#F5222D29] text-red-700 px-4 rounded-md mt-2">
+                            <p className="text-sm">{errors.password}</p>
+                        </div>
                     )}
                 </div>
 
                 <button
                     onClick={handleLogin}
-                    className="bg-[#009540] w-full rounded-md text-white p-3 border border-[#377D3F] mt-8"
+                    className="bg-[#009540] w-full rounded-md text-white p-3 border border-[#377D3F] mt-3"
                 >
                     Login
                 </button>

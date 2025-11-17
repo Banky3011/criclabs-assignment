@@ -26,8 +26,8 @@ const Sidebar = (props: SidebarProps) => {
   ];
 
   return (
-    <aside className="h-16 mb-4 md:h-full lg:border-none md:border-none border-b border-gray-200 overflow-x-auto md:overflow-x-visible overflow-y-hidden md:overflow-y-auto">
-      <nav className="flex md:flex-col items-center md:items-start md:space-y-1 space-x-2 md:space-x-0 px-6 py-4 md:py-8 min-w-max md:min-w-0">
+    <aside className="h-16 mb-4 lg:h-full lg:border-none border-b border-gray-200 overflow-x-auto lg:overflow-x-visible overflow-y-hidden lg:overflow-y-auto">
+      <nav className="flex lg:flex-col items-center lg:items-start lg:space-y-1 space-x-2 lg:space-x-0 px-6 py-4 lg:py-8 min-w-max lg:min-w-0">
         {menuItems.map((item) => (
           <SidebarMenuItem
             key={item.id}

@@ -31,7 +31,6 @@ const Home = () => {
     const searchMatch = mapping.title.toLowerCase().includes(appliedFilters.search.toLowerCase());
     const departmentMatch = appliedFilters.departments.length === 0 || appliedFilters.departments.includes(mapping.department);
     
-    // Check if any selected data subject exists in the mapping's comma-separated dataSubjectType
     const dataSubjectMatch = appliedFilters.dataSubjects.length === 0 || 
       appliedFilters.dataSubjects.some(subject => 
         mapping.dataSubjectType?.includes(subject)
@@ -87,7 +86,7 @@ const Home = () => {
     <>
       <Navbar />
 
-      <div className="grid grid-cols-1 md:grid-cols-[256px_1fr] md:h-[calc(100vh-4rem)]">
+      <div className="grid grid-cols-1 lg:grid-cols-[256px_1fr] lg:h-[calc(100vh-4rem)]">
         <Sidebar activeMenu={activeMenu} onMenuChange={setActiveMenu} />
 
         <main className="px-6 py-2 lg:py-10 overflow-y-auto">
